@@ -8,6 +8,12 @@ import { useCreateGroupHook } from "./abc";
 import { API_URL } from './main'
 import { getHistory, storeMessage } from "./messageHistory";
 
+type message = {
+    content: string,
+    senderEmail: string,
+    receiverEmail: string,
+}
+
 function arrayBufferToHex(arrayBuffer:ArrayBuffer) {
     const view = new DataView(arrayBuffer);
     const hexParts = [];
@@ -140,11 +146,11 @@ export default function ChatPage(){
           console.log('Conexão estabelecida');
         });
       
-        newSocket.on(String(localStorage.getItem('email')), async (message: number[]) => {
+        newSocket.on(String(localStorage.getItem('email')), async (payload) => {
             console.log('oi');
                 const textDecoder =  new TextDecoder();
                 const ivBytes = new Uint8Array(12);
-                const ArrayBuffer = new Uint8Array(message).buffer;
+                const ArrayBuffer = new Uint8Array(payload.message).buffer;
 
                 console.log(ArrayBuffer)
 
@@ -157,7 +163,7 @@ export default function ChatPage(){
                 
                 const decoded = textDecoder.decode(buffer);
                 console.log(decoded);
-                setChat((prevMessages) => [...prevMessages, {message: decoded, fromMe: false}]);
+                setChat((prevMessages) => [...prevMessages, {message: decoded, senderEmail: payload.senderEmail, receiverEmail: payload.receiverEmail}]);
                 
         });
 
@@ -254,7 +260,8 @@ export default function ChatPage(){
     
         const jsonMessage = JSON.stringify({
             message: byteArray,
-            receiver: selectedUser.email
+            receiverEmail: selectedUser.email,
+            senderEmail: String(localStorage.getItem('email'))
         })
 
         if (socket) {
@@ -262,8 +269,8 @@ export default function ChatPage(){
         }
 
         // setMessages((prevMessages) => [...prevMessages, messageInput])
-        storeMessage(message, String(localStorage.getItem('email')), selectedUser.email)
-        setChat((prevMessages) => [...prevMessages, {message: message, fromMe: true}])
+        // storeMessage(message, String(localStorage.getItem('email')), selectedUser.email)
+        setChat((prevMessages) => [...prevMessages, {message: message, senderEmail: String(localStorage.getItem('email')), receiverEmail: selectedUser.email}])
         setMessage('');
     };
 
@@ -311,9 +318,7 @@ export default function ChatPage(){
                     user.email != localStorage.getItem('email') &&
                     <Contact onClick={() => {
                         setSelectedUser(user);
-                        setChat(
-                            getHistory(localStorage.getItem('chat'), user.email)
-                            )
+                        // setChat(getHistory())
                     }} key={index} $active={selectedUser?.name == user.name ? true :false}>
                         <img ></img>
                         <p>{user.name}</p>
@@ -336,7 +341,7 @@ export default function ChatPage(){
                     {/* <input type="text" placeholder="key" value={key} onChange={(e) => setKey(e.target.value)}/> */}
                     {/* <input type="text" placeholder="receiver" onChange={(e) => setReceiver(e.target.value)}/> */}
 
-                    {chat &&chat.map((item, index) => <Message $fromme={item.fromMe} key={index}>{item.message}</Message>)}
+                    {chat &&chat.map((item, index) => <Message $fromme={item.senderEmail == String(localStorage.getItem('email'))} key={index}>{item.message}</Message>)}
                 </Chat>
 
 

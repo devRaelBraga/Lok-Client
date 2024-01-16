@@ -5,6 +5,8 @@ import './reset.css'
 import RegisterPage from './Register.tsx'
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import ChatPage from './Chat.tsx'
+import GroupRegister from './GroupRegister.tsx'
+import AddMembersToGroup from './GroupAddMembers.tsx'
 
 const router = createBrowserRouter([
   {
@@ -23,6 +25,14 @@ const router = createBrowserRouter([
     path: '/chat',
     element: <ChatPage/>,
   },
+  {
+    path: '/group-register',
+    element: <GroupRegister/>,
+  },
+  {
+    path: '/add-user',
+    element: <AddMembersToGroup/>
+  }
 ]);
 
 

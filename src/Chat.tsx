@@ -4,16 +4,27 @@ import Logo from "./assets/logo.png"
 import SendIcon from "./assets/send-icon.svg"
 // import { useGenerateKeyHook, useGetKeyHook } from "./hooks/encryptionHook";
 import io, { Socket } from 'socket.io-client';
+import { useCreateGroupHook } from "./abc";
 
 type Message = {
     message: string,
     fromMe: boolean,
 }
 
+function arrayBufferToHex(arrayBuffer:ArrayBuffer) {
+    const view = new DataView(arrayBuffer);
+    const hexParts = [];
+    for (let i = 0; i < view.byteLength; i++) {
+      const hex = view.getUint8(i).toString(16).padStart(2, '0');
+      hexParts.push(hex);
+    }
+    return hexParts.join('');
+};
 
 export default function ChatPage(){
 
     const [users, setUsers] = useState<any[]>([]);
+    const [addedUser, setAddedUser] = useState('');
     const [selectedUser, setSelectedUser] = useState<any>();
     const [rawKey, setRawKey] = useState<any>();
     const [shared, setSharedKey] = useState<any>();
@@ -24,12 +35,14 @@ export default function ChatPage(){
     useEffect(() => {
         async function getUsers() {
             await fetch('http://localhost:3000/user', {
-            method: 'GET',
+            method: 'POST',
             headers: {
                 "Content-Type": "application/json"
             },
+            body: JSON.stringify({id: String(localStorage.getItem('email'))})
         }).then((response) => response.json()).then((data) => {
             setUsers(data)
+            console.log(data)
         })
         }
         getUsers()
@@ -100,6 +113,8 @@ export default function ChatPage(){
                   );
     
                   setSharedKey(sharedkey);
+                  console.log(sharedkey);
+                  console.log(sharedkey);
                   return(sharedkey);
             } catch (error) {
                 console.log(error);
@@ -111,6 +126,18 @@ export default function ChatPage(){
 
     useEffect(() => {
         const newSocket = io('http://localhost:3000');
+
+        function hexToArrayBuffer(hexString:string) {
+            const buffer = new ArrayBuffer(hexString.length / 2);
+            const view = new DataView(buffer);
+          
+            for (let i = 0; i < hexString.length; i += 2) {
+              const byteValue = parseInt(hexString.substr(i, 2), 16);
+              view.setUint8(i / 2, byteValue);
+            }
+    
+            return buffer;
+        }
       
         newSocket.on('connect', () => {
           console.log('Conexão estabelecida');
@@ -136,9 +163,69 @@ export default function ChatPage(){
                 setChat((prevMessages) => [...prevMessages, {message: decoded, fromMe: false}]);
                 
         });
-      
-        // newSocket.on('disconnect', () => {
-        // });
+
+        newSocket.on('group-' + String(localStorage.getItem('email')), async (message: string) => {
+            console.log('Adicionado a um grupo!');
+                
+            const payload = await JSON.parse(message);
+
+            const textDecoder =  new TextDecoder();
+            const ivBytes = new Uint8Array(12);
+            const ArrayBuffer = new Uint8Array(payload.message).buffer;
+
+            console.log(payload)
+
+            let adminKey = await users.find(user => user.email == payload.sender)
+            
+            console.log('public:', adminKey);
+
+            adminKey = await crypto.subtle.importKey('raw', hexToArrayBuffer(adminKey.identityKey), {
+                name: 'ECDH',
+                namedCurve: 'P-256'
+            }, true, []).catch(err => console.log(err))
+
+            let privateKey:any = await crypto.subtle.importKey('pkcs8', hexToArrayBuffer(String(localStorage.getItem('pIdentityKey'))), {
+                name: 'ECDH',
+                namedCurve: 'P-256'
+            }, true, ['deriveKey']).catch(err => console.log(err.message));
+
+
+            const sharedkey = await crypto.subtle.deriveKey(
+                {
+                    name: 'ECDH',
+                    public: adminKey,
+                },
+                privateKey,
+                {
+                    name: 'AES-GCM',
+                    length: 256
+                },
+                true,
+                ['encrypt', 'decrypt']
+                );
+
+
+            // const buffer = await crypto.subtle.decrypt({
+            //     name: 'AES-GCM',
+            //     iv: ivBytes
+            //     }, sharedkey, ArrayBuffer);
+
+            // console.log(buffer);
+            
+            // const decoded = textDecoder.decode(buffer);
+            
+
+            let groupKey = await crypto.subtle.importKey('raw', hexToArrayBuffer(payload.key), {
+                name:'AES-GCM',
+            }, true, ["encrypt"])
+
+            console.log('grupo: ',groupKey);
+            console.log(payload.name)
+
+            localStorage.setItem(payload.name, arrayBufferToHex(await crypto.subtle.exportKey('raw', groupKey)))
+
+        });
+
       
         newSocket.on('error', (error: any) => {
           console.error('Erro na conexão:', error);
@@ -152,6 +239,7 @@ export default function ChatPage(){
             newSocket.disconnect();
           }
         };
+
     }, [shared]);
     
     
@@ -180,6 +268,37 @@ export default function ChatPage(){
         setChat((prevMessages) => [...prevMessages, {message: message, fromMe: true}])
         setMessage('');
     };
+
+    async function addToGroup(){
+        // let
+
+        const jsonMessage = JSON.stringify({
+            receiver: addedUser,
+            key: localStorage.getItem(selectedUser.name),
+            sender: localStorage.getItem('email'),
+            name: selectedUser.name
+        })
+
+        if(socket){
+            socket.emit('addUserToGroup', jsonMessage);
+        }
+
+        await fetch('http://localhost:3000/message/group/addUser', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({adminId: String(localStorage.getItem('email')), name: selectedUser.name, userEmail: addedUser})
+        }).then((response) => response.json()).then((data) => {
+            console.log(data);
+        })
+
+    }
+
+    async function handleAddUser(){
+        console.log('addUserToGroup');
+        await addToGroup();
+    }
     
 
     return(
@@ -193,7 +312,7 @@ export default function ChatPage(){
                     // <Contact onClick={() => setSelectedUser(user)} key={index} $active={selectedUser?.name == user.name ? true :false}>{user.name}</Contact>
                     user.email != localStorage.getItem('email') &&
                     <Contact onClick={() => setSelectedUser(user)} key={index} $active={selectedUser?.name == user.name ? true :false}>
-                        <img src={user.profilePicUrl}></img>
+                        <img ></img>
                         <p>{user.name}</p>
                     </Contact>
                 // </>
@@ -201,6 +320,14 @@ export default function ChatPage(){
             </Contacts>
 
             <ChatContainer>
+                {selectedUser && selectedUser.adminId != undefined && 
+                <>
+                    <input type="text" value={addedUser} onChange={(e) => setAddedUser(e.target.value)}/>
+                    <button onClick={handleAddUser}>
+                        Adicionar Usuários
+                    </button>
+                </>
+                }
                 <Chat>
                     {/* <p>{String(shared)}</p> */}
                     {/* <input type="text" placeholder="key" value={key} onChange={(e) => setKey(e.target.value)}/> */}

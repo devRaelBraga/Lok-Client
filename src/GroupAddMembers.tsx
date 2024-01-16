@@ -1,5 +1,6 @@
 import styles from './GroupAddMembers.module.css'
 import { useState, useEffect } from 'react'
+import { API_URL } from './main'
 
 export default function AddMembersToGroup() {
   const [addedMembers, setAddedMembers] = useState<any[]>([])
@@ -7,7 +8,7 @@ export default function AddMembersToGroup() {
 
   useEffect(() => {
     async function getUsers() {
-      await fetch('http://localhost:3000/user', {
+      await fetch(`${API_URL}/user`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

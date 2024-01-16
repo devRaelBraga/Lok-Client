@@ -2,6 +2,7 @@ import { useState } from 'react'
 import styles from './GroupRegister.module.css'
 import { useCreateGroupHook } from './abc'
 import Logo from './assets/logo.png'
+import { API_URL } from './main'
 
 export default function GroupRegister() {
   const [name, setName] = useState('')
@@ -12,7 +13,7 @@ export default function GroupRegister() {
     e.preventDefault()
     await useCreateGroupHook(String(localStorage.getItem('pIdentityKey')), name)
 
-    await fetch('http://localhost:3000/message/group', {
+    await fetch(`${API_URL}/message/group`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json"

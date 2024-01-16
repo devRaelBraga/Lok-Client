@@ -2,6 +2,7 @@ import styled from "styled-components"
 import { useState, useEffect } from 'react'
 import Logo from "./assets/logo.png"
 import { useNavigate } from "react-router-dom";
+import { API_URL } from './main'
 
 
 
@@ -31,7 +32,7 @@ export default function RegisterPage(){
             photo = reader.result;
             // console.log(JSON.stringify({name, email, password, identityKey, photo: photo}));
             
-            await fetch('http://localhost:3000/user/create', {
+            await fetch(`${API_URL}/user/create`, {
             method: 'POST',
             body: JSON.stringify({name, email, password, identityKey, photo}),
             headers: {

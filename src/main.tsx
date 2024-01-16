@@ -8,6 +8,8 @@ import ChatPage from './Chat.tsx'
 import GroupRegister from './GroupRegister.tsx'
 import AddMembersToGroup from './GroupAddMembers.tsx'
 
+export const API_URL = "http://localhost:3000"
+
 const router = createBrowserRouter([
   {
     path: "*",

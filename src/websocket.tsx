@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import io from 'socket.io-client';
+import { API_URL } from './main'
 
 function WebSocketComponent({topic, destino, shared}:{topic:string, destino:string, shared:CryptoKey}) {
   const [messages, setMessages] = useState<string[]>([]);
@@ -7,7 +8,7 @@ function WebSocketComponent({topic, destino, shared}:{topic:string, destino:stri
   const [socket, setSocket] = useState<any>(null);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:3000');
+    const newSocket = io(`${API_URL}`);
 
     newSocket.on('connect', () => {
       console.log('Conexão estabelecida');

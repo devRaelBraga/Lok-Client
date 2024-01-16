@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import Logo from "./assets/logo.png"
 import loadingGif from "./assets/loading.gif"
 import { useNavigate } from "react-router-dom";
+import { API_URL } from './main'
 
 export default function LoginPage(){
     const [loading, setLoading] = useState(false)
@@ -16,7 +17,7 @@ export default function LoginPage(){
         setLoading(true);
 
 
-        await fetch('http://localhost:3000/auth/login', {
+        await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json"

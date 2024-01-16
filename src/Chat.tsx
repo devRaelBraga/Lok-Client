@@ -5,6 +5,7 @@ import SendIcon from "./assets/send-icon.svg"
 // import { useGenerateKeyHook, useGetKeyHook } from "./hooks/encryptionHook";
 import io, { Socket } from 'socket.io-client';
 import { useCreateGroupHook } from "./abc";
+import { API_URL } from './main'
 import { getHistory, storeMessage } from "./messageHistory";
 
 function arrayBufferToHex(arrayBuffer:ArrayBuffer) {
@@ -30,7 +31,7 @@ export default function ChatPage(){
 
     useEffect(() => {
         async function getUsers() {
-            await fetch('http://localhost:3000/user', {
+            await fetch(`${API_URL}/user`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json"
@@ -121,7 +122,7 @@ export default function ChatPage(){
     }, [rawKey])
 
     useEffect(() => {
-        const newSocket = io('http://localhost:3000');
+        const newSocket = io(`${API_URL}`);
 
         function hexToArrayBuffer(hexString:string) {
             const buffer = new ArrayBuffer(hexString.length / 2);
@@ -280,7 +281,7 @@ export default function ChatPage(){
             socket.emit('addUserToGroup', jsonMessage);
         }
 
-        await fetch('http://localhost:3000/message/group/addUser', {
+        await fetch(`${API_URL}/message/group/addUser`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json"

@@ -116,8 +116,8 @@ export default function ChatPage(){
                   );
     
                   setSharedKey(sharedkey);
-                  console.log(sharedkey);
-                  console.log(sharedkey);
+                //   console.log(sharedkey);
+                //   console.log(sharedkey);
                   return(sharedkey);
             } catch (error) {
                 console.log(error);
@@ -148,23 +148,22 @@ export default function ChatPage(){
       
         newSocket.on(String(localStorage.getItem('email')), async (payload) => {
             console.log('oi');
-                const textDecoder =  new TextDecoder();
-                const ivBytes = new Uint8Array(12);
-                const ArrayBuffer = new Uint8Array(payload.message).buffer;
+            payload = JSON.parse(payload);
+            console.log(payload.message);
+            const textDecoder =  new TextDecoder();
+            const ivBytes = new Uint8Array(12);
+            const ArrayBuffer = new Uint8Array(payload.message).buffer;
 
-                console.log(ArrayBuffer)
+            const buffer = await crypto.subtle.decrypt({
+                name: 'AES-GCM',
+                iv: ivBytes
+                }, shared, ArrayBuffer);
 
-                const buffer = await crypto.subtle.decrypt({
-                    name: 'AES-GCM',
-                    iv: ivBytes
-                    }, shared, ArrayBuffer);
-
-                console.log(buffer);
-                
-                const decoded = textDecoder.decode(buffer);
-                console.log(decoded);
-                setChat((prevMessages) => [...prevMessages, {message: decoded, senderEmail: payload.senderEmail, receiverEmail: payload.receiverEmail}]);
-                
+            console.log("buffer, ", buffer);
+            
+            const decoded = textDecoder.decode(buffer);
+            console.log(decoded);
+            setChat((prevMessages) => [...prevMessages, {message: decoded, senderEmail: payload.senderEmail, receiverEmail: payload.receiverEmail}]);
         });
 
         newSocket.on('group-' + String(localStorage.getItem('email')), async (message: string) => {

@@ -162,7 +162,8 @@ export default function ChatPage(){
             console.log("buffer, ", buffer);
             
             const decoded = textDecoder.decode(buffer);
-            console.log(decoded);
+            // console.log(decoded);
+            storeMessage(decoded, payload.senderEmail, payload.receiverEmail);
             setChat((prevMessages) => [...prevMessages, {message: decoded, senderEmail: payload.senderEmail, receiverEmail: payload.receiverEmail}]);
         });
 
@@ -268,7 +269,7 @@ export default function ChatPage(){
         }
 
         // setMessages((prevMessages) => [...prevMessages, messageInput])
-        // storeMessage(message, String(localStorage.getItem('email')), selectedUser.email)
+        storeMessage(message, String(localStorage.getItem('email')), selectedUser.email)
         setChat((prevMessages) => [...prevMessages, {message: message, senderEmail: String(localStorage.getItem('email')), receiverEmail: selectedUser.email}])
         setMessage('');
     };
@@ -317,7 +318,8 @@ export default function ChatPage(){
                     user.email != localStorage.getItem('email') &&
                     <Contact onClick={() => {
                         setSelectedUser(user);
-                        // setChat(getHistory())
+                        setChat(getHistory(String(localStorage.getItem('email')), user.email))
+                        console.log(getHistory(String(localStorage.getItem('email')), user.email))
                     }} key={index} $active={selectedUser?.name == user.name ? true :false}>
                         <img ></img>
                         <p>{user.name}</p>
@@ -340,7 +342,7 @@ export default function ChatPage(){
                     {/* <input type="text" placeholder="key" value={key} onChange={(e) => setKey(e.target.value)}/> */}
                     {/* <input type="text" placeholder="receiver" onChange={(e) => setReceiver(e.target.value)}/> */}
 
-                    {chat &&chat.map((item, index) => <Message $fromme={item.senderEmail == String(localStorage.getItem('email'))} key={index}>{item.message}</Message>)}
+                    {chat &&chat.map((item, index) => <Message $fromme={item.senderEmail == String(localStorage.getItem('email'))} key={index}>{item.content}</Message>)}
                 </Chat>
 
 

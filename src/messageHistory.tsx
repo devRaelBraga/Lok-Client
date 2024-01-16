@@ -18,7 +18,12 @@ export function storeMessage(content: string, senderEmail: string, receiverEmail
 
     let messageHistory: messageHistory = JSON.parse(String(localStorage.getItem('messageHistory')))
 
-    messageHistory = [...messageHistory, a]
+    if(!messageHistory) {
+        messageHistory = []
+        console.log('era null')
+    }
+
+    messageHistory.push(a)
 
 
 

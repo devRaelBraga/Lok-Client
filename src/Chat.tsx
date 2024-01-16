@@ -5,11 +5,7 @@ import SendIcon from "./assets/send-icon.svg"
 // import { useGenerateKeyHook, useGetKeyHook } from "./hooks/encryptionHook";
 import io, { Socket } from 'socket.io-client';
 import { useCreateGroupHook } from "./abc";
-
-type Message = {
-    message: string,
-    fromMe: boolean,
-}
+import { getHistory, storeMessage } from "./messageHistory";
 
 function arrayBufferToHex(arrayBuffer:ArrayBuffer) {
     const view = new DataView(arrayBuffer);
@@ -29,7 +25,7 @@ export default function ChatPage(){
     const [rawKey, setRawKey] = useState<any>();
     const [shared, setSharedKey] = useState<any>();
     const [message, setMessage] = useState('');
-    const [chat, setChat] = useState<Message[]>([]);
+    const [chat, setChat] = useState<any[]>([]);
     const [socket, setSocket] = useState<Socket>();
 
     useEffect(() => {
@@ -265,6 +261,7 @@ export default function ChatPage(){
         }
 
         // setMessages((prevMessages) => [...prevMessages, messageInput])
+        storeMessage(message, String(localStorage.getItem('email')), selectedUser.email)
         setChat((prevMessages) => [...prevMessages, {message: message, fromMe: true}])
         setMessage('');
     };
@@ -311,7 +308,12 @@ export default function ChatPage(){
                 // <>
                     // <Contact onClick={() => setSelectedUser(user)} key={index} $active={selectedUser?.name == user.name ? true :false}>{user.name}</Contact>
                     user.email != localStorage.getItem('email') &&
-                    <Contact onClick={() => setSelectedUser(user)} key={index} $active={selectedUser?.name == user.name ? true :false}>
+                    <Contact onClick={() => {
+                        setSelectedUser(user);
+                        setChat(
+                            getHistory(localStorage.getItem('chat'), user.email)
+                            )
+                    }} key={index} $active={selectedUser?.name == user.name ? true :false}>
                         <img ></img>
                         <p>{user.name}</p>
                     </Contact>

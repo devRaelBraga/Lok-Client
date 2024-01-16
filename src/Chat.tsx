@@ -164,7 +164,7 @@ export default function ChatPage(){
             const decoded = textDecoder.decode(buffer);
             // console.log(decoded);
             storeMessage(decoded, payload.senderEmail, payload.receiverEmail);
-            setChat((prevMessages) => [...prevMessages, {message: decoded, senderEmail: payload.senderEmail, receiverEmail: payload.receiverEmail}]);
+            setChat((prevMessages) => [...prevMessages, {content: decoded, senderEmail: payload.senderEmail, receiverEmail: payload.receiverEmail}]);
         });
 
         newSocket.on('group-' + String(localStorage.getItem('email')), async (message: string) => {

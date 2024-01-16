@@ -270,7 +270,7 @@ export default function ChatPage(){
 
         // setMessages((prevMessages) => [...prevMessages, messageInput])
         storeMessage(message, String(localStorage.getItem('email')), selectedUser.email)
-        setChat((prevMessages) => [...prevMessages, {message: message, senderEmail: String(localStorage.getItem('email')), receiverEmail: selectedUser.email}])
+        setChat((prevMessages) => [...prevMessages, {content: message, senderEmail: String(localStorage.getItem('email')), receiverEmail: selectedUser.email}])
         setMessage('');
     };
 

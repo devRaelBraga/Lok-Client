@@ -13,7 +13,7 @@ export default function AddMembersToGroup() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({id: String(localStorage.getItem('email'))})
+        body: JSON.stringify({ id: String(localStorage.getItem('email')) }),
       })
         .then((response) => response.json())
         .then((data) => {
@@ -42,22 +42,25 @@ export default function AddMembersToGroup() {
           return (
             <span>
               <button onClick={() => removeMemberToGroup(user)}>x</button>
-              <img src={  ''} />
-              <p>
-                {user.name}
-              </p>
+              <img src={user.profilePicUrl} />
+              <p>{user.name}</p>
             </span>
           )
         })}
       </header>
       <div className={styles.userList}>
         {users.map((user) => {
-          return (
-            <button onClick={() => addMemberToGroup(user)}>
-              <img src={''} />
-              {user.name}
-            </button>
-          )
+          if (!addedMembers.includes(user)) {
+            return (
+              <button
+                className={styles.user}
+                onClick={() => addMemberToGroup(user)}
+              >
+                <img src={user.profilePicUrl} />
+                <p>{user.name}</p>
+              </button>
+            )
+          }
         })}
       </div>
       <button className={styles.submitButton}>Concluir</button>

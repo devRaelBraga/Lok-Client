@@ -321,7 +321,7 @@ export default function ChatPage(){
                         setChat(getHistory(String(localStorage.getItem('email')), user.email))
                         console.log(getHistory(String(localStorage.getItem('email')), user.email))
                     }} key={index} $active={selectedUser?.name == user.name ? true :false}>
-                        <img ></img>
+                        <img src={user.profilePicUrl}></img>
                         <p>{user.name}</p>
                     </Contact>
                 // </>

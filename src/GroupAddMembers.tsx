@@ -17,6 +17,7 @@ export default function AddMembersToGroup() {
       })
         .then((response) => response.json())
         .then((data) => {
+          console.log(data)
           setUsers(data)
         })
     }
@@ -40,7 +41,7 @@ export default function AddMembersToGroup() {
       <header className={styles.header}>
         {addedMembers.map((user) => {
           return (
-            <span>
+            <span className={styles.user}>
               <button onClick={() => removeMemberToGroup(user)}>x</button>
               <img src={user.profilePicUrl} />
               <p>{user.name}</p>

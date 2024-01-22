@@ -40,6 +40,12 @@
   margin-top: 1rem;
 }
 
+.removeMemberButton {
+  background-color: transparent;
+  border: none;
+  position: absolute;
+}
+
 .userList p {
   color: aliceblue;
 }
@@ -63,4 +69,5 @@
   bottom: -20px;
   color: white;
   text-align: center;
+  margin: 0 auto;
 }

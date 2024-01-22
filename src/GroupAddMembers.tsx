@@ -42,7 +42,12 @@ export default function AddMembersToGroup() {
         {addedMembers.map((user) => {
           return (
             <span className={styles.user}>
-              <button onClick={() => removeMemberToGroup(user)}>x</button>
+              <button
+                className={styles.removeMemberButton}
+                onClick={() => removeMemberToGroup(user)}
+              >
+                x
+              </button>
               <img src={user.profilePicUrl} />
               <p>{user.name}</p>
             </span>

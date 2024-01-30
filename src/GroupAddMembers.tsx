@@ -20,7 +20,8 @@ export default function AddMembersToGroup() {
         .then((response) => response.json())
         .then((data) => {
           console.log(data)
-          setUsers(data.members)
+          setUsers(data.notMembers)
+          setAddedMembers(data.members)
         })
     }
     getUsers()

@@ -447,7 +447,7 @@ export default function ChatPage(){
                         Adicionar Usuários
                     </button> */}
                     <GroupHeader onClick={() => navigate(`/add-user/${selectedUser.id}`)}>
-                        {selectedUser.name}
+                        Adicionar Usuários
                     </GroupHeader>
                 </>
                 }
@@ -624,6 +624,10 @@ const GroupHeader = styled.div`
     padding: 1rem;
     align-self: flex-end;
     cursor: pointer;
+    background-color: #272740;
+    margin-top: 1rem;
+    margin-right: 1rem;
+    border-radius: 8px;
 `
 
 const SendMessageButton = styled.button`

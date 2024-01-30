@@ -48,3 +48,12 @@
   }
   font-size: medium;
 }
+
+input[type="file"] {
+  border: none;
+  margin-left: -1rem;
+}
+
+.addImage {
+  color: white;
+}

@@ -13,12 +13,14 @@
   border-radius: 6px 6px 0 0;
   display: flex;
   gap: 1rem;
+  overflow-x: auto;
 }
 
 .userList {
   height: 25rem;
   background: #171726;
   border-radius: 0 0 6px 6px;
+  padding: 1rem;
 }
 
 .submitButton {
@@ -31,18 +33,41 @@
   transition: 200ms ease-in-out;
   font-family: 'Open Sans', sans-serif;
   font-weight: 600;
-
-  &:hover {
-    box-shadow: 0px 0px 5px black;
-  }
   font-size: medium;
-  
+
   width: 15rem;
   margin: 0 auto;
   margin-top: 1rem;
+}
 
-  .userList p{
-    color: aliceblue;
-  }
+.removeMemberButton {
+  background-color: transparent;
+  border: none;
+  position: absolute;
+}
 
+.userList p {
+  color: aliceblue;
+}
+
+.user {
+  width: fit-content;
+  position: relative;
+  background-color: transparent;
+  border: none;
+}
+
+.user img {
+  width: 3rem;
+  height: 3rem;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.user p {
+  position: absolute;
+  bottom: -20px;
+  color: white;
+  text-align: center;
+  margin: 0 auto;
 }

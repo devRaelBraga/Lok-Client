@@ -1,23 +1,26 @@
 import styles from './GroupAddMembers.module.css'
 import { useState, useEffect } from 'react'
 import { API_URL } from './main'
+import { useParams } from 'react-router-dom'
 
 export default function AddMembersToGroup() {
   const [addedMembers, setAddedMembers] = useState<any[]>([])
   const [users, setUsers] = useState<any[]>([])
+  const { id } = useParams();
 
   useEffect(() => {
     async function getUsers() {
-      await fetch(`${API_URL}/user`, {
+      await fetch(`${API_URL}/message/group/usersOnGroup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({id: String(localStorage.getItem('email'))})
+        body: JSON.stringify({ groupId: id }),
       })
         .then((response) => response.json())
         .then((data) => {
-          setUsers(data)
+          console.log(data)
+          setUsers(data.members)
         })
     }
     getUsers()
@@ -40,27 +43,35 @@ export default function AddMembersToGroup() {
       <header className={styles.header}>
         {addedMembers.map((user) => {
           return (
-            <span>
-              <button onClick={() => removeMemberToGroup(user)}>x</button>
-              <img src={  ''} />
-              <p>
-                {user.name}
-              </p>
+            <span className={styles.user}>
+              <button
+                className={styles.removeMemberButton}
+                onClick={() => removeMemberToGroup(user)}
+              >
+                x
+              </button>
+              <img src={user.profilePicUrl} />
+              <p>{user.name}</p>
             </span>
           )
         })}
       </header>
       <div className={styles.userList}>
-        {users.map((user) => {
-          return (
-            <button onClick={() => addMemberToGroup(user)}>
-              <img src={''} />
-              {user.name}
-            </button>
-          )
+        {users.map((user, index) => {
+          if (!addedMembers.includes(user)) {
+            return (
+              <button
+                className={styles.user}
+                onClick={() => addMemberToGroup(user)} key={index}
+              >
+                <img src={user.profilePicUrl} />
+                <p>{user.name}</p>
+              </button>
+            )
+          }
         })}
       </div>
-      <button className={styles.submitButton}>Concluir</button>
+      <button onClick={() => console.log(id)} className={styles.submitButton}>Concluir</button>
     </div>
   )
 }

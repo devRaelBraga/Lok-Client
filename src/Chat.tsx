@@ -225,7 +225,7 @@ export default function ChatPage(){
                 console.log(selectedUser)
                 storeMessage(decoded, payload.senderEmail, String(localStorage.getItem('email')), groupName);
                 if(selectedUser && (selectedUser.email == payload.senderEmail || selectedUser.email == payload.receiverEmail || selectedUser.name == groupName)) {
-                    setChat((prevMessages) => [...prevMessages, {content: decoded, senderEmail: payload.senderEmail, receiverEmail: String(localStorage.getItem('email'))}]);
+                    setChat((prevMessages) => [...prevMessages, {content: decoded, senderEmail: payload.senderEmail, receiverEmail: String(localStorage.getItem('email')), group: groupName}]);
                 }
     
             });
@@ -446,7 +446,7 @@ export default function ChatPage(){
                     <button onClick={handleAddUser}>
                         Adicionar Usuários
                     </button> */}
-                    <GroupHeader onClick={() => navigate(`/add-user/${selectedUser.id}`)}>
+                    <GroupHeader onClick={() => navigate(`/add-user/${selectedUser.id}/${selectedUser.name}`)}>
                         {selectedUser.name}
                     </GroupHeader>
                 </>

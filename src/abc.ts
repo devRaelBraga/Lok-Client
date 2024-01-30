@@ -30,7 +30,7 @@ export async function useCreateGroupHook(privateKey: string, name: string){
 
             console.log(arrayBufferToHex(shared))
 
-            localStorage.setItem(name, arrayBufferToHex(shared))
+            localStorage.setItem('group:' + name, arrayBufferToHex(shared))
         
             return(sharedkey);
 

@@ -32,7 +32,7 @@ const router = createBrowserRouter([
     element: <GroupRegister/>,
   },
   {
-    path: '/add-user',
+    path: '/add-user/:id',
     element: <AddMembersToGroup/>
   }
 ]);

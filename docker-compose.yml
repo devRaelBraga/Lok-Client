@@ -1,0 +1,24 @@
+version: '3'
+
+volumes:
+  newsite_node_modules:
+    name: newsite_node_modules
+    driver: local
+    
+networks:
+  ss:
+    name: ss
+    driver: bridge
+
+services:
+  frontend:
+    restart: always
+    build: .
+    command: yarn dev
+    ports: 
+      - 5173:5173
+    networks:
+      - ss
+    volumes:
+      - .:/home/newsite
+      - newsite_node_modules:/home/newsite/node_modules
